@@ -48,10 +48,15 @@ export async function POST(request: NextRequest) {
       })
 
     if (profileError) {
-      // 如果创建资料失败，删除已注册的用户
-      await supabase.auth.admin.deleteUser(authData.user.id)
+      console.error('创建用户资料失败:', profileError)
+      // 如果创建资料失败，尝试删除已注册的用户
+      try {
+        await supabase.auth.admin.deleteUser(authData.user.id)
+      } catch (e) {
+        console.error('删除用户失败:', e)
+      }
       return NextResponse.json(
-        { error: '创建用户资料失败' },
+        { error: '创建用户资料失败: ' + profileError.message },
         { status: 500 }
       )
     }
