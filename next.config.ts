@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Netlify 兼容性配置
+  // 输出模式 - 确保所有文件被正确包含
+  output: 'standalone',
   experimental: {
     // 启用服务器操作
     serverActions: {
