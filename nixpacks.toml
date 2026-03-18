@@ -9,3 +9,5 @@ cmds = ['pnpm run build']
 
 [start]
 cmd = 'pnpm start'
+
+# 强制清除缓存 v2
