@@ -232,7 +232,8 @@ export default function AssignmentDetailPage() {
     setGrading(true)
 
     try {
-      const response = await fetch('/api/grade', {
+      // 先提交作业，获取 submission_id
+      const submitResponse = await fetch('/api/submissions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -240,6 +241,25 @@ export default function AssignmentDetailPage() {
         },
         body: JSON.stringify({
           assignment_id: params.id,
+          content,
+          attachments: attachments.map(a => ({ url: a.url, key: a.key })),
+        }),
+      })
+
+      const submitData = await submitResponse.json()
+      if (!submitResponse.ok) {
+        throw new Error(submitData.error || '提交作业失败')
+      }
+
+      // 调用 AI 批改
+      const response = await fetch('/api/grade', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          submission_id: submitData.submission?.id,
           images: attachments.map(a => a.url),
           text_content: content,
           assignment_title: assignment?.title,
